@@ -30,7 +30,7 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
-# Clean up object files and the library
+# Clean up object files and the executable
 clean:
 	rm -f $(OBJ)
 
