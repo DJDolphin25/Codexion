@@ -8,8 +8,7 @@ CFLAGS = -Wall -Wextra -Werror
 
 	
 # Source files
-SRC = src/main.c \
-
+SRC = src/main.c
 
 # Object files
 OBJ = $(SRC:.c=.o)
