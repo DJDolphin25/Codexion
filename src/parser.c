@@ -92,6 +92,22 @@ static int	conversion(int i, char *str, t_args *args)
 	return (1);
 }
 
+void	transfer_to_global(t_global *global, t_args *args)
+{
+	if (global = NULL )
+	global->finished = 0; // Sin empezar
+	global->number_of_coders = args->number_of_coders;
+	global->time_to_burnout = args->time_to_burnout;
+	global->time_to_compile = args->time_to_compile;
+	global->time_to_debug = args->time_to_debug;
+	global->time_to_refactor = args->time_to_refactor;
+	global->number_of_compiles_required = args->number_of_compiles_required;
+	global->dongle_cooldown = args->dongle_cooldown;
+	global->scheduler = args->scheduler;
+
+	global->dongles = NULL;
+}
+
 int	parse_arg(int ac, char **av, t_args *args)
 {
 	int	i;

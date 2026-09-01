@@ -14,12 +14,14 @@
 
 int	main(int ac, char **av)
 {
-	t_args	args;
+	t_args		args;
+	t_global	global;
 
 	if (ac == 9)
 	{
-		if (parse_args(ac, av, &args) == 0)
+		if(parse_args(ac, av, &args) == 0)
 			return (1);
+		transfer_to_global(&global, &args);
 	}
 	else
 	{
