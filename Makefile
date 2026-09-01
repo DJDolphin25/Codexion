@@ -4,11 +4,12 @@ NAME = codexion
 
 # Compiler and flags
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -I includes
 
 	
 # Source files
-SRC = src/main.c
+SRC = src/main.c \
+		src/parser.c	
 
 # Object files
 OBJ = $(SRC:.c=.o)

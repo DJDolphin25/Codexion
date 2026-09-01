@@ -1,0 +1,16 @@
+{
+    "[c]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools"
+    },
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/includes"
+    ],
+    "C_Cpp.default.intelliSenseEngine": "default",
+    "C_Cpp.intelliSenseEngine": "default",
+    "C_Cpp.autoAddFileAssociations": true,
+    "files.associations": {
+        "*.h": "c",
+        "*.c": "c"
+    }
+}
