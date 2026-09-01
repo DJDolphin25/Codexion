@@ -1,2 +1,5 @@
 .gitignore
 .vscode/
+codexion
+codexion.exe
+*.o
