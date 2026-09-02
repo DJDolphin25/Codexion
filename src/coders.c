@@ -16,13 +16,13 @@
 void	*thread_creation()
 {
 	int 	i;
-	t_coder	**coders;
+	t_coder	*coders;
 
 	i = 0;
 	while(i < coders->global->number_of_coders)
 	{
-		if (pthread_create(&coders[i]->thread_id, NULL, funcion, &coders[i]) != 0)
-			fprintf(stderr, "Failed to create thread %ld", &coders[i]->thread_id)
+		if (pthread_create(coders[i]->thread_id, NULL, funcion, coders[i]) != 0)
+			fprintf(stderr, "Failed to create thread %ld", coders[i]->thread_id)
 		i++;
 	}
 	i = 0;
@@ -34,10 +34,18 @@ void	*thread_creation()
 	}
 }
 
-void    *init_coders(void *arg)
+int    init_coders(t_global *global)
 {
-    t_coder *coder;
+		int			i;
 
-    coder = pthread_create(coder->thread_id, NULL, nada, NULL);
-    return (0);
+    global->coders = malloc(sizeof(t_coder) * global->number_of_coders);
+		if (!global->coders)
+			return (0);
+		i = 0;
+		while(i < global->number_of_coders)
+		{
+			global->coders[i].id = i + 1;
+			i++;
+		}
+    return (1);
 }

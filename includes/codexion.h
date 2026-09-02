@@ -81,6 +81,7 @@ typedef struct s_global
 	struct timespec	start_time;
 
 	t_dongle		*dongles;
+	t_coder			*coders;
 
 	void			*scheduler_queue;
 }	t_global;
