@@ -21,7 +21,12 @@ int	main(int ac, char **av)
 	{
 		if(parse_args(ac, av, &args) == 0)
 			return (1);
-		transfer_to_global(&global, &args);
+		if (transfer_to_global(&global, &args) == 0)
+			return (1);
+		if (init_coders(&global) == 0)
+			return (1);
+		if (thread_creation(&global) == 0)
+			return (1);
 	}
 	else
 	{

@@ -6,46 +6,67 @@
 /*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/01 15:52:34 by theoppon          #+#    #+#             */
-/*   Updated: 2026/09/01 15:52:35 by theoppon         ###   ########.fr       */
+/*   Updated: 2026/09/03 15:25:46 by theoppon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <codexion.h>
 
-
-void	*thread_creation()
+static void	*execute_thread(void *data)
 {
-	int 	i;
-	t_coder	*coders;
+	int		waiting_time;
+	t_coder	*coder;
 
-	i = 0;
-	while(i < coders->global->number_of_coders)
-	{
-		if (pthread_create(coders[i]->thread_id, NULL, funcion, coders[i]) != 0)
-			fprintf(stderr, "Failed to create thread %ld", coders[i]->thread_id)
-		i++;
-	}
-	i = 0;
-	while(i < coders->global->number_of_coders)
-	{
-		if (pthread_join(&coders[i]->thread_id, NULL))
-			fprintf(stderr, "Failed to create thread %ld", &coders[i]->thread_id)
-		i++;
-	}
+	coder = (t_coder *)data;
+	waiting_time = coder->global->time_to_compile * 1000;
+	printf("Coder id: %d is working\n", coder->id);
+	usleep(waiting_time);
+	return (NULL);
 }
 
-int    init_coders(t_global *global)
+int	thread_creation(t_global *global)
 {
-		int			i;
+	int	i;
 
-    global->coders = malloc(sizeof(t_coder) * global->number_of_coders);
-		if (!global->coders)
-			return (0);
-		i = 0;
-		while(i < global->number_of_coders)
+	i = 0;
+	while (i < global->number_of_coders)
+	{
+		if (pthread_create(&global->coders[i].thread_id, NULL,
+				execute_thread, &global->coders[i]) != 0)
 		{
-			global->coders[i].id = i + 1;
-			i++;
+			fprintf(stderr, "Failed to create thread %lu\n",
+				global->coders[i].thread_id);
+			return (0);
 		}
-    return (1);
+		i++;
+	}
+	i = 0;
+	while (i < global->number_of_coders)
+	{
+		if (pthread_join(global->coders[i].thread_id, NULL) != 0)
+		{
+			fprintf(stderr, "Failed to join thread %lu\n",
+				global->coders[i].thread_id);
+			return (0);
+		}
+		i++;
+	}
+	return (1);
+}
+
+int	init_coders(t_global *global)
+{
+	int	i;
+
+	global->coders = malloc(sizeof(t_coder) * global->number_of_coders);
+	if (!global->coders)
+		return (0);
+	i = 0;
+	while (i < global->number_of_coders)
+	{
+		global->coders[i].id = i + 1;
+		global->coders[i].global = global;
+		i++;
+	}
+	return (1);
 }

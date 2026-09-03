@@ -89,4 +89,9 @@ typedef struct s_global
 //Parser funtcion
 int	parse_args(int ac, char **av, t_args *args);
 
+int	thread_creation(t_global *global);
+int	init_coders(t_global *global);
+
+int	transfer_to_global(t_global *global, t_args *args);
+
 #endif

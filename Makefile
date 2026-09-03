@@ -9,7 +9,8 @@ CFLAGS = -Wall -Wextra -Werror -I includes
 	
 # Source files
 SRC = src/main.c \
-		src/parser.c	
+		src/parser.c \
+		src/coders.c
 
 # Object files
 OBJ = $(SRC:.c=.o)

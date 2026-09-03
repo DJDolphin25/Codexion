@@ -92,23 +92,28 @@ static int	conversion(int i, char *str, t_args *args)
 	return (1);
 }
 
-void	transfer_to_global(t_global *global, t_args *args)
+int	transfer_to_global(t_global *global, t_args *args)
 {
-	if (global = NULL )
-	global->finished = 0; // Sin empezar
-	global->number_of_coders = args->number_of_coders;
-	global->time_to_burnout = args->time_to_burnout;
-	global->time_to_compile = args->time_to_compile;
-	global->time_to_debug = args->time_to_debug;
-	global->time_to_refactor = args->time_to_refactor;
-	global->number_of_compiles_required = args->number_of_compiles_required;
-	global->dongle_cooldown = args->dongle_cooldown;
-	global->scheduler = args->scheduler;
+	if (global == NULL)
+		return (0);
+	else
+	{
+		global->finished = 0; // Sin empezar
+		global->number_of_coders = args->number_of_coders;
+		global->time_to_burnout = args->time_to_burnout;
+		global->time_to_compile = args->time_to_compile;
+		global->time_to_debug = args->time_to_debug;
+		global->time_to_refactor = args->time_to_refactor;
+		global->number_of_compiles_required = args->number_of_compiles_required;
+		global->dongle_cooldown = args->dongle_cooldown;
+		global->scheduler = args->scheduler;
 
-	global->dongles = NULL;
+		global->dongles = NULL;
+		return (1);
+	}
 }
 
-int	parse_arg(int ac, char **av, t_args *args)
+int	parse_args(int ac, char **av, t_args *args)
 {
 	int	i;
 
@@ -122,8 +127,10 @@ int	parse_arg(int ac, char **av, t_args *args)
 			return (0);
 		}
 		if (i == ac - 1)
+		{
 			if (parse_scheduler(av[i], args) == 0)
 				return (0);
+		}
 		else
 		{
 			if (parse_numbers(i, av[i]) == 0)
