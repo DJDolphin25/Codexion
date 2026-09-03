@@ -6,7 +6,7 @@
 /*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/01 15:52:34 by theoppon          #+#    #+#             */
-/*   Updated: 2026/09/03 15:25:46 by theoppon         ###   ########.fr       */
+/*   Updated: 2026/09/03 17:28:01 by theoppon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,12 @@ int	thread_creation(t_global *global)
 		}
 		i++;
 	}
+}
+
+int	thread_joining(t_global *global)
+{
+	int	i;
+
 	i = 0;
 	while (i < global->number_of_coders)
 	{

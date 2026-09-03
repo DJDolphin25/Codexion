@@ -6,7 +6,7 @@
 /*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/01 15:22:17 by theoppon          #+#    #+#             */
-/*   Updated: 2026/09/01 15:25:22 by theoppon         ###   ########.fr       */
+/*   Updated: 2026/09/03 17:26:25 by theoppon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int	transfer_to_global(t_global *global, t_args *args)
 		return (0);
 	else
 	{
-		global->finished = 0; // Sin empezar
+		global->finished = 0;
 		global->number_of_coders = args->number_of_coders;
 		global->time_to_burnout = args->time_to_burnout;
 		global->time_to_compile = args->time_to_compile;
@@ -107,7 +107,6 @@ int	transfer_to_global(t_global *global, t_args *args)
 		global->number_of_compiles_required = args->number_of_compiles_required;
 		global->dongle_cooldown = args->dongle_cooldown;
 		global->scheduler = args->scheduler;
-
 		global->dongles = NULL;
 		return (1);
 	}
@@ -133,9 +132,7 @@ int	parse_args(int ac, char **av, t_args *args)
 		}
 		else
 		{
-			if (parse_numbers(i, av[i]) == 0)
-				return (0);
-			if (conversion(i, av[i], args) == 0)
+			if (parse_numbers(i, av[i]) == 0 || conversion(i, av[i], args) == 0)
 				return (0);
 		}
 		i++;
