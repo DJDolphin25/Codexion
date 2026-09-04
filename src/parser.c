@@ -88,7 +88,7 @@ static int	conversion(int i, char *str, t_args *args)
 	else if (i == 6)
 		args->number_of_compiles_required = value;
 	else if (i == 7)
-		args->dongle_cooldown = value;
+		args->dongle_cooldown = (long)value * 1000;
 	return (1);
 }
 

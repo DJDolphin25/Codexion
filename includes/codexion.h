@@ -20,6 +20,10 @@
 # include <time.h>
 # include <unistd.h>
 
+enum dongle_state {
+	FREE, TAKEN
+};
+
 //Structure for the dongle
 typedef struct s_dongle
 {
@@ -54,7 +58,7 @@ typedef struct s_args
 	int				time_to_debug;
 	int				time_to_refactor;
 	int				number_of_compiles_required;
-	int				dongle_cooldown;
+	long			dongle_cooldown;
 
 	char			*scheduler;
 }	t_args;
@@ -69,7 +73,7 @@ typedef struct s_global
 	int				time_to_debug;
 	int				time_to_refactor;
 	int				number_of_compiles_required;
-	int				dongle_cooldown;
+	long			dongle_cooldown;
 
 	char			*scheduler;
 
@@ -91,7 +95,7 @@ int	parse_args(int ac, char **av, t_args *args);
 
 int	thread_creation(t_global *global);
 int	init_coders(t_global *global);
-
+int init_dongles(t_global *global);
 int	transfer_to_global(t_global *global, t_args *args);
 
 #endif

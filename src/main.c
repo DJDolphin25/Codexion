@@ -23,8 +23,17 @@ int	main(int ac, char **av)
 			return (1);
 		if (transfer_to_global(&global, &args) == 0)
 			return (1);
+		if (init_dongles(&global) == 0)
+			return (1);	
 		if (init_coders(&global) == 0)
 			return (1);
+		int j = 0;
+		while (j < global.number_of_coders)
+		{
+    		printf("coder %d -> left=%p right=%p\n", global.coders[j].id,
+        		(void *)global.coders[j].left_dongle, (void *)global.coders[j].right_dongle);
+    		j++;
+		}
 		if (thread_creation(&global) == 0)
 			return (1);
 	}

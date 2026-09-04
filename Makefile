@@ -10,7 +10,7 @@ CFLAGS = -Wall -Wextra -Werror -pthread -I includes -g
 # Source files
 SRC = src/main.c \
 		src/parser.c \
-		src/coders.c \
+		src/init.c \
 		src/threads.c
 
 # Object files
