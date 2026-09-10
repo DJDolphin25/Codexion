@@ -8,9 +8,10 @@ CFLAGS = -Wall -Wextra -Werror -pthread -I includes -g
 
 	
 # Source files
-SRC = src/main.c \
+SRC = src/coders.c \
+		src/dongles.c \
+		src/main.c \
 		src/parser.c \
-		src/init.c \
 		src/threads.c
 
 # Object files

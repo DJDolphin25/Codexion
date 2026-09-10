@@ -27,19 +27,21 @@ static void	*execute_thread(void *data)
 static int	join_threads(t_global *global, int limit)
 {
 	int	i;
+	int error;
 
 	i = 0;
+	error = 1;
 	while (i < limit)
 	{
 		if (pthread_join(global->coders[i].thread_id, NULL) != 0)
 		{
 			fprintf(stderr, "Failed to join thread %lu\n",
 				global->coders[i].thread_id);
-			return (0);
+			error = 0;
 		}
 		i++;
 	}
-	return (1);
+	return (error);
 }
 
 static int	create_threads(t_global *global)
