@@ -3,3 +3,4 @@
 codexion
 codexion.exe
 *.o
+tests.c

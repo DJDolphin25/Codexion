@@ -15,12 +15,28 @@
 static void	*execute_thread(void *data)
 {
 	int		waiting_time;
+	int		attempts;
 	t_coder	*coder;
 
 	coder = (t_coder *)data;
 	waiting_time = coder->global->time_to_compile * 1000;
-	printf("Coder id: %d is working\n", coder->id);
-	usleep(waiting_time);
+	while (attempts < 1000)
+	{
+		if (take_dongle(coder->left_dongle) == 1)
+		{
+			printf("%d has taken a dongle\n", coder->id);
+			usleep(waiting_time);
+			drop_dongle(coder->left_dongle);
+			printf("%d has released a dongle\n", coder->id);
+			break ;
+		}
+		else
+		{
+			printf("%d waiting for dongle \n", coder->id);
+			usleep(10000);
+			attempts++;
+		}
+	}
 	return (NULL);
 }
 

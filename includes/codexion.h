@@ -90,12 +90,22 @@ typedef struct s_global
 	void			*scheduler_queue;
 }	t_global;
 
-//Parser funtcion
+// Parser funtcions (parser.c)
 int	parse_args(int ac, char **av, t_args *args);
-
-int	thread_creation(t_global *global);
-int	init_coders(t_global *global);
-int init_dongles(t_global *global);
 int	transfer_to_global(t_global *global, t_args *args);
+
+// Thread funtcions (threads.c)
+int	thread_creation(t_global *global);
+
+// Coder funtcions and dongle assignation (coders.c)
+int	init_coders(t_global *global);
+
+// Dongle funtcions (dongles.c) 
+int	init_dongles(t_global *global);
+int	take_dongle(t_dongle *dongle);
+int	drop_dongle(t_dongle *dongle);
+
+
+
 
 #endif
