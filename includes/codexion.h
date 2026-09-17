@@ -24,7 +24,6 @@ enum dongle_state {
 	FREE, TAKEN
 };
 
-//Structure for the dongle
 typedef struct s_dongle
 {
 	int				state;
@@ -34,7 +33,6 @@ typedef struct s_dongle
 	struct timespec	last_release;
 }	t_dongle;
 
-//Structure for the coder
 typedef struct s_coder
 {
 	int				id;
@@ -49,7 +47,6 @@ typedef struct s_coder
 	t_dongle		*right_dongle;
 }	t_coder;
 
-//Structure for the arguments
 typedef struct s_args
 {
 	int				number_of_coders;
@@ -63,7 +60,6 @@ typedef struct s_args
 	char			*scheduler;
 }	t_args;
 
-//Structure for the global variables
 typedef struct s_global
 {
 	int				finished;
@@ -90,17 +86,14 @@ typedef struct s_global
 	void			*scheduler_queue;
 }	t_global;
 
-// Parser funtcions (parser.c)
+
 int	parse_args(int ac, char **av, t_args *args);
 int	transfer_to_global(t_global *global, t_args *args);
 
-// Thread funtcions (threads.c)
 int	thread_creation(t_global *global);
 
-// Coder funtcions and dongle assignation (coders.c)
 int	init_coders(t_global *global);
-
-// Dongle funtcions (dongles.c) 
+ 
 int	init_dongles(t_global *global);
 int	take_dongle(t_dongle *dongle);
 int	drop_dongle(t_dongle *dongle);

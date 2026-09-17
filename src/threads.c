@@ -18,6 +18,7 @@ static void	*execute_thread(void *data)
 	int		attempts;
 	t_coder	*coder;
 
+	attempts = 0;
 	coder = (t_coder *)data;
 	waiting_time = coder->global->time_to_compile * 1000;
 	while (attempts < 1000)
