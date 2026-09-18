@@ -108,6 +108,8 @@ int	transfer_to_global(t_global *global, t_args *args)
 		global->dongle_cooldown = args->dongle_cooldown;
 		global->scheduler = args->scheduler;
 		global->dongles = NULL;
+		if (!init_global(global))
+			return (0);
 		return (1);
 	}
 }

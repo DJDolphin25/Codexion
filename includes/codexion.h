@@ -91,12 +91,19 @@ int	parse_args(int ac, char **av, t_args *args);
 int	transfer_to_global(t_global *global, t_args *args);
 
 int	thread_creation(t_global *global);
+void *execute_thread(void *data);
 
 int	init_coders(t_global *global);
  
+void	acquire_dongles(t_coder *coder);
+int	drop_dongle(t_dongle *dongle);
 int	init_dongles(t_global *global);
 int	take_dongle(t_dongle *dongle);
-int	drop_dongle(t_dongle *dongle);
+
+int destroy_mutex(t_global *global, int limit);
+
+int	init_global(t_global *global);
+void	destroy_global(t_global *global);
 
 
 

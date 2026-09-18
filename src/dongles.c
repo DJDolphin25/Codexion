@@ -6,13 +6,13 @@
 /*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 16:41:19 by theoppon          #+#    #+#             */
-/*   Updated: 2026/09/16 16:41:25 by theoppon         ###   ########.fr       */
+/*   Updated: 2026/09/18 17:43:53 by theoppon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <codexion.h>
 
-int take_dongle(t_dongle *dongle)
+int	take_dongle(t_dongle *dongle)
 {
 	pthread_mutex_lock(&dongle->mutex);
 	if (dongle->state == TAKEN)
@@ -25,7 +25,7 @@ int take_dongle(t_dongle *dongle)
 	return (1);
 }
 
-int drop_dongle(t_dongle *dongle)
+int	drop_dongle(t_dongle *dongle)
 {
 	pthread_mutex_lock(&dongle->mutex);
 	dongle->state = FREE;
@@ -33,20 +33,20 @@ int drop_dongle(t_dongle *dongle)
 	return (1);
 }
 
-void		acquire_dongles(t_coder *coder)
+void	acquire_dongles(t_coder *coder)
 {
 	if (coder->id % 2 == 0)
 	{
-		while(!take_dongle(coder->left_dongle))
+		while (!take_dongle(coder->left_dongle))
 			usleep(2000);
-		while(!take_dongle(coder->right_dongle))
+		while (!take_dongle(coder->right_dongle))
 			usleep(2000);
 	}
 	else
 	{
-		while(!take_dongle(coder->right_dongle))
+		while (!take_dongle(coder->right_dongle))
 			usleep(2000);
-		while(!take_dongle(coder->left_dongle))
+		while (!take_dongle(coder->left_dongle))
 			usleep(2000);
 	}
 }
@@ -54,7 +54,7 @@ void		acquire_dongles(t_coder *coder)
 int	init_dongles(t_global *global)
 {
 	int		i;
-	enum	dongle_state condition;
+	enum 	dongle_state condition;
 
 	global->dongles = malloc(sizeof(t_dongle) * global->number_of_coders);
 	if (!global->dongles)

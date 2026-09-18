@@ -6,7 +6,7 @@
 /*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 17:09:33 by theoppon          #+#    #+#             */
-/*   Updated: 2026/09/18 17:09:36 by theoppon         ###   ########.fr       */
+/*   Updated: 2026/09/18 17:52:44 by theoppon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static int	join_threads(t_global *global, int limit)
 {
 	int	i;
-	int error;
+	int	error;
 
 	i = 0;
 	error = 1;

@@ -6,10 +6,9 @@
 /*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 16:40:25 by theoppon          #+#    #+#             */
-/*   Updated: 2026/09/16 16:40:38 by theoppon         ###   ########.fr       */
+/*   Updated: 2026/09/18 17:41:59 by theoppon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include <codexion.h>
 
@@ -25,12 +24,11 @@ int	init_coders(t_global *global)
 	{
 		global->coders[i].id = i + 1;
 		global->coders[i].global = global;
-    	global->coders[i].left_dongle = 
-			&global->dongles[(i - 1 + global->number_of_coders) 
+		global->coders[i].left_dongle = &global->dongle[(i - 1
+				+ global->number_of_coders) % global->number_of_coders];
+		global->coders[i].right_dongle = &global->dongles[(i + 1)
 			% global->number_of_coders];
-    	global->coders[i].right_dongle =
-        	&global->dongles[(i + 1) % global->number_of_coders];
-    	i++;
+		i++;
 	}
 	return (1);
 }

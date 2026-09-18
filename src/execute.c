@@ -6,15 +6,15 @@
 /*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 14:17:18 by theoppon          #+#    #+#             */
-/*   Updated: 2026/09/18 14:17:20 by theoppon         ###   ########.fr       */
+/*   Updated: 2026/09/18 17:45:51 by theoppon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <codexion.h>
 
-static void		compile_thread(t_coder *coder)
+static void	compile_thread(t_coder *coder)
 {
-	int		compile_time;
+	int	compile_time;
 
 	compile_time = coder->global->time_to_compile * 1000;
 	acquire_dongles(coder);
@@ -26,9 +26,9 @@ static void		compile_thread(t_coder *coder)
 	drop_dongle(coder->right_dongle);
 }
 
-static void		debug_thread(t_coder *coder)
+static void	debug_thread(t_coder *coder)
 {
-	int		debug_time;
+	int	debug_time;
 
 	debug_time = coder->global->time_to_debug * 1000;
 	pthread_mutex_lock(&coder->global->log_mutex);
@@ -37,9 +37,9 @@ static void		debug_thread(t_coder *coder)
 	usleep(debug_time);
 }
 
-static void		refactor_thread(t_coder *coder)
+static void	refactor_thread(t_coder *coder)
 {
-	int		refactoring_time;
+	int	refactoring_time;
 
 	refactoring_time = coder->global->time_to_refactor * 1000;
 	pthread_mutex_lock(&coder->global->log_mutex);
@@ -53,7 +53,7 @@ void	*execute_thread(void *data)
 	t_coder	*coder;
 
 	coder = (t_coder *)data;
-	while(1)
+	while (1)
 	{
 		compile_thread(coder);
 		debug_thread(coder);
