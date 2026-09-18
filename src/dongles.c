@@ -33,23 +33,22 @@ int drop_dongle(t_dongle *dongle)
 	return (1);
 }
 
-static int destroy_mutex(t_global *global, int limit)
+void		acquire_dongles(t_coder *coder)
 {
-	int	i;
-	int error;
-
-	i = 0;
-	error = 1;
-	while (i < limit)
+	if (coder->id % 2 == 0)
 	{
-		if (pthread_mutex_destroy(&global->dongles[i].mutex) != 0)
-		{
-			fprintf(stderr, "Failed to destry mutex %d\n", i);
-			error = 0;
-		}
-		i++;
+		while(!take_dongle(coder->left_dongle))
+			usleep(2000);
+		while(!take_dongle(coder->right_dongle))
+			usleep(2000);
 	}
-	return (error);
+	else
+	{
+		while(!take_dongle(coder->right_dongle))
+			usleep(2000);
+		while(!take_dongle(coder->left_dongle))
+			usleep(2000);
+	}
 }
 
 int	init_dongles(t_global *global)

@@ -1,45 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   coders.c                                           :+:      :+:    :+:   */
+/*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/01 15:52:34 by theoppon          #+#    #+#             */
-/*   Updated: 2026/09/03 17:29:14 by theoppon         ###   ########.fr       */
+/*   Created: 2026/09/18 17:09:33 by theoppon          #+#    #+#             */
+/*   Updated: 2026/09/18 17:09:36 by theoppon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <codexion.h>
-
-static void	*execute_thread(void *data)
-{
-	int		waiting_time;
-	int		attempts;
-	t_coder	*coder;
-
-	attempts = 0;
-	coder = (t_coder *)data;
-	waiting_time = coder->global->time_to_compile * 1000;
-	while (attempts < 1000)
-	{
-		if (take_dongle(coder->left_dongle) == 1)
-		{
-			printf("%d has taken a dongle\n", coder->id);
-			usleep(waiting_time);
-			drop_dongle(coder->left_dongle);
-			printf("%d has released a dongle\n", coder->id);
-			break ;
-		}
-		else
-		{
-			printf("%d waiting for dongle \n", coder->id);
-			usleep(10000);
-			attempts++;
-		}
-	}
-	return (NULL);
-}
 
 static int	join_threads(t_global *global, int limit)
 {
