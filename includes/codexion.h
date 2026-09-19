@@ -6,7 +6,7 @@
 /*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/01 14:57:42 by theoppon          #+#    #+#             */
-/*   Updated: 2026/09/01 15:06:08 by theoppon         ###   ########.fr       */
+/*   Updated: 2026/09/18 20:21:39 by theoppon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,28 +20,37 @@
 # include <time.h>
 # include <unistd.h>
 
-enum dongle_state {
-	FREE, TAKEN
+enum	e_dongle_state
+{
+	COOLDOWN,
+	FREE,
+	TAKEN,
 };
 
 typedef struct s_dongle
 {
 	int				state;
 
-	pthread_mutex_t	mutex;
+	pthread_mutex_t	state_lock;
+	pthread_cond_t	available_cond;
+
+	struct s_global	*global;
 
 	struct timespec	last_release;
+	struct timespec	now;
+	struct timespec target_time;
 }	t_dongle;
 
 typedef struct s_coder
 {
 	int				id;
-	int				compile_done;
+	int				compiles_done;
 
 	pthread_t		thread_id;
 
-	struct timespec	last_compile_start;
 	struct s_global	*global;
+
+	struct timespec	last_compile_start;
 
 	t_dongle		*left_dongle;
 	t_dongle		*right_dongle;
@@ -86,26 +95,23 @@ typedef struct s_global
 	void			*scheduler_queue;
 }	t_global;
 
+int		parse_args(int ac, char **av, t_args *args);
+int		transfer_to_global(t_global *global, t_args *args);
 
-int	parse_args(int ac, char **av, t_args *args);
-int	transfer_to_global(t_global *global, t_args *args);
+int		thread_creation(t_global *global);
+void	*execute_thread(void *data);
 
-int	thread_creation(t_global *global);
-void *execute_thread(void *data);
+int		init_coders(t_global *global);
 
-int	init_coders(t_global *global);
- 
 void	acquire_dongles(t_coder *coder);
-int	drop_dongle(t_dongle *dongle);
-int	init_dongles(t_global *global);
-int	take_dongle(t_dongle *dongle);
+int		drop_dongle(t_dongle *dongle);
+int		init_dongles(t_global *global);
+int		take_dongle(t_dongle *dongle);
 
-int destroy_mutex(t_global *global, int limit);
+int		destroy_mutex(t_global *global, int limit);
+int		destroy_cond(t_global *global, int limit);
 
-int	init_global(t_global *global);
-void	destroy_global(t_global *global);
-
-
-
+int		init_global(t_global *global);
+int		destroy_global(t_global *global);
 
 #endif

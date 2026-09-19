@@ -14,22 +14,40 @@
 
 int	take_dongle(t_dongle *dongle)
 {
-	pthread_mutex_lock(&dongle->mutex);
-	if (dongle->state == TAKEN)
+	pthread_mutex_lock(&dongle->state_lock);
+	while (dongle->state == TAKEN)
+		pthread_cond_wait(&dongle->available_cond, &dongle->state_lock);
+	while (dongle->state == COOLDOWN)
 	{
-		pthread_mutex_unlock(&dongle->mutex);
-		return (0);
+		clock_gettime(CLOCK_REALTIME, &dongle->now);
+		dongle->target_time = dongle->last_release;
+		dongle->target_time.tv_nsec += dongle->global->dongle_cooldown * 1000000;
+		{
+			if (dongle->target_time.tv_nsec >= 1000000000)
+			{
+				dongle->target_time.tv_sec += dongle->target_time.tv_nsec / 1000000000;
+				dongle->target_time.tv_nsec %= 1000000000;
+			}
+			if (dongle->now.tv_sec < dongle->target_time.tv_sec ||
+				(dongle->now.tv_sec == dongle->target_time.tv_sec &&
+				dongle->now.tv_nsec < dongle->target_time.tv_nsec ))
+				pthread_cond_timedwait(&dongle->available_cond, &dongle->state_lock,
+				&dongle->target_time);
+			else
+				dongle->state = FREE;
+		}
 	}
 	dongle->state = TAKEN;
-	pthread_mutex_unlock(&dongle->mutex);
+	pthread_mutex_unlock(&dongle->state_lock);
 	return (1);
 }
 
 int	drop_dongle(t_dongle *dongle)
 {
-	pthread_mutex_lock(&dongle->mutex);
-	dongle->state = FREE;
-	pthread_mutex_unlock(&dongle->mutex);
+	pthread_mutex_lock(&dongle->state_lock);
+	dongle->state = COOLDOWN;
+	pthread_cond_signal(&dongle->available_cond);
+	pthread_mutex_unlock(&dongle->state_lock);
 	return (1);
 }
 
@@ -37,24 +55,20 @@ void	acquire_dongles(t_coder *coder)
 {
 	if (coder->id % 2 == 0)
 	{
-		while (!take_dongle(coder->left_dongle))
-			usleep(2000);
-		while (!take_dongle(coder->right_dongle))
-			usleep(2000);
+		take_dongle(coder->left_dongle);
+		take_dongle(coder->right_dongle);
 	}
 	else
 	{
-		while (!take_dongle(coder->right_dongle))
-			usleep(2000);
-		while (!take_dongle(coder->left_dongle))
-			usleep(2000);
+		take_dongle(coder->right_dongle);
+		take_dongle(coder->left_dongle);
 	}
 }
 
 int	init_dongles(t_global *global)
 {
 	int		i;
-	enum 	dongle_state condition;
+	enum 	e_dongle_state condition;
 
 	global->dongles = malloc(sizeof(t_dongle) * global->number_of_coders);
 	if (!global->dongles)
@@ -63,10 +77,19 @@ int	init_dongles(t_global *global)
 	condition = FREE;
 	while (i < global->number_of_coders)
 	{
-		if (pthread_mutex_init(&global->dongles[i].mutex, NULL) != 0)
+		if (pthread_mutex_init(&global->dongles[i].state_lock, NULL) != 0)
 		{
 			fprintf(stderr, "Failed to mutex dongle %d\n", i);
 			destroy_mutex(global, i);
+			return (0);
+		}
+		if (pthread_cond_init(&global->dongles[i].available_cond, NULL) != 0)
+		{
+			fprintf(stderr, "Failed to cond dongle %d\n", i);
+			destroy_mutex(global, i);
+			destroy_cond(global, i);
+			free(global->dongles);
+			global->dongles = NULL;
 			return (0);
 		}
 		global->dongles[i].state = condition;

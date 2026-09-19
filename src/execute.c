@@ -53,9 +53,11 @@ void	*execute_thread(void *data)
 	t_coder	*coder;
 
 	coder = (t_coder *)data;
-	while (1)
+	coder->compiles_done = 0;
+	while (coder->compiles_done < coder->global->number_of_compiles_required)
 	{
 		compile_thread(coder);
+		coder->compiles_done++;
 		debug_thread(coder);
 		refactor_thread(coder);
 	}

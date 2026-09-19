@@ -23,11 +23,15 @@ int	main(int ac, char **av)
 			return (1);
 		if (transfer_to_global(&global, &args) == 0)
 			return (1);
+		if (init_global(&global) == 0)
+			return (1);
 		if (init_dongles(&global) == 0)
 			return (1);
 		if (init_coders(&global) == 0)
 			return (1);
 		if (thread_creation(&global) == 0)
+			return (1);
+		if (destroy_global(&global) == 0)
 			return (1);
 	}
 	else
