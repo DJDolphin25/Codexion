@@ -26,8 +26,7 @@ int	init_coders(t_global *global)
 		global->coders[i].global = global;
 		global->coders[i].left_dongle = &global->dongles[(i - 1
 				+ global->number_of_coders) % global->number_of_coders];
-		global->coders[i].right_dongle = &global->dongles[(i + 1)
-			% global->number_of_coders];
+		global->coders[i].right_dongle = &global->dongles[i];
 		i++;
 	}
 	return (1);
