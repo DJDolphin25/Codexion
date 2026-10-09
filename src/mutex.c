@@ -54,6 +54,7 @@ int	init_global(t_global *global)
 {
 	if (global == NULL)
 		return (0);
+	clock_gettime(CLOCK_REALTIME, &global->start_time);
 	if (pthread_mutex_init(&global->log_mutex, NULL) != 0)
 	{
 		fprintf(stderr, "%s", "Failed to initialize log mutex\n");
@@ -66,6 +67,7 @@ int	destroy_global(t_global *global)
 {
 	if (global == NULL)
 		return (0);
+	destroy_scheduler_queues(global);
 	if (pthread_mutex_destroy(&global->log_mutex) != 0)
 	{
 		fprintf(stderr, "%s", "Failed to destroy log mutex\n");

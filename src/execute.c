@@ -12,16 +12,23 @@
 
 #include <codexion.h>
 
+static void	sleep_microseconds(long microseconds)
+{
+	struct timespec	request;
+
+	request.tv_sec = microseconds / 1000000L;
+	request.tv_nsec = (microseconds % 1000000L) * 1000L;
+	nanosleep(&request, NULL);
+}
+
 static void	compile_thread(t_coder *coder)
 {
 	int	compile_time;
 
 	compile_time = coder->global->time_to_compile * 1000;
 	acquire_dongles(coder);
-	pthread_mutex_lock(&coder->global->log_mutex);
-	printf("%d is compiling\n", coder->id);
-	pthread_mutex_unlock(&coder->global->log_mutex);
-	usleep(compile_time);
+	log_state(coder, "is compiling");
+	sleep_microseconds(compile_time);
 	drop_dongle(coder->left_dongle);
 	drop_dongle(coder->right_dongle);
 }
@@ -31,10 +38,8 @@ static void	debug_thread(t_coder *coder)
 	int	debug_time;
 
 	debug_time = coder->global->time_to_debug * 1000;
-	pthread_mutex_lock(&coder->global->log_mutex);
-	printf("%d is debugging\n", coder->id);
-	pthread_mutex_unlock(&coder->global->log_mutex);
-	usleep(debug_time);
+	log_state(coder, "is debugging");
+	sleep_microseconds(debug_time);
 }
 
 static void	refactor_thread(t_coder *coder)
@@ -42,10 +47,8 @@ static void	refactor_thread(t_coder *coder)
 	int	refactoring_time;
 
 	refactoring_time = coder->global->time_to_refactor * 1000;
-	pthread_mutex_lock(&coder->global->log_mutex);
-	printf("%d is refactoring\n", coder->id);
-	pthread_mutex_unlock(&coder->global->log_mutex);
-	usleep(refactoring_time);
+	log_state(coder, "is refactoring");
+	sleep_microseconds(refactoring_time);
 }
 
 void	*execute_thread(void *data)

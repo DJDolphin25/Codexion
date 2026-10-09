@@ -12,75 +12,23 @@
 
 #include <codexion.h>
 
-int	take_dongle(t_dongle *dongle)
-{
-	pthread_mutex_lock(&dongle->state_lock);
-	while (dongle->state != FREE)
-	{
-		if (dongle->state == TAKEN)
-			pthread_cond_wait(&dongle->available_cond, &dongle->state_lock);
-		else if (dongle->state == COOLDOWN)
-		{
-			clock_gettime(CLOCK_REALTIME, &dongle->now);
-			dongle->target_time = dongle->last_release;
-			dongle->target_time.tv_nsec += dongle->global->dongle_cooldown * 1000000;
-			if (dongle->target_time.tv_nsec >= 1000000000)
-			{
-				dongle->target_time.tv_sec += dongle->target_time.tv_nsec / 1000000000;
-				dongle->target_time.tv_nsec %= 1000000000;
-			}
-			if (dongle->now.tv_sec < dongle->target_time.tv_sec ||
-				(dongle->now.tv_sec == dongle->target_time.tv_sec &&
-				dongle->now.tv_nsec < dongle->target_time.tv_nsec ))
-				pthread_cond_timedwait(&dongle->available_cond, &dongle->state_lock,
-				&dongle->target_time);
-			else
-				dongle->state = FREE;
-		}
-	}
-	dongle->state = TAKEN;
-	pthread_mutex_unlock(&dongle->state_lock);
-	return (1);
-}
-
-int	drop_dongle(t_dongle *dongle)
-{
-	pthread_mutex_lock(&dongle->state_lock);
-	dongle->state = COOLDOWN;
-	clock_gettime(CLOCK_REALTIME, &dongle->last_release);
-	pthread_cond_signal(&dongle->available_cond);
-	pthread_mutex_unlock(&dongle->state_lock);
-	return (1);
-}
-
 void	acquire_dongles(t_coder *coder)
 {
-	t_global *global;
-
-    global = coder->left_dongle->global;
 	if (coder->id % 2 == 0)
 	{
 		take_dongle(coder->left_dongle);
-        pthread_mutex_lock(&global->log_mutex);
-        printf("%d has taken a dongle\n", coder->id);
-        pthread_mutex_unlock(&global->log_mutex);
+		log_state(coder, "has taken a dongle");
 
 		take_dongle(coder->right_dongle);
-        pthread_mutex_lock(&global->log_mutex);
-        printf("%d has taken a dongle\n", coder->id);
-        pthread_mutex_unlock(&global->log_mutex);
+		log_state(coder, "has taken a dongle");
 	}
 	else
 	{
 		take_dongle(coder->right_dongle);
-        pthread_mutex_lock(&global->log_mutex);
-        printf("%d has taken a dongle \n", coder->id);
-        pthread_mutex_unlock(&global->log_mutex);
+		log_state(coder, "has taken a dongle");
 
 		take_dongle(coder->left_dongle);
-        pthread_mutex_lock(&global->log_mutex);
-        printf("%d has taken a dongle\n", coder->id);
-        pthread_mutex_unlock(&global->log_mutex);
+		log_state(coder, "has taken a dongle");
 	}
 }
 
@@ -116,6 +64,14 @@ int	init_dongles(t_global *global)
 		global->dongles[i].last_release.tv_sec = 0;
 		global->dongles[i].last_release.tv_nsec = 0;
 		i++;
+	}
+	if (!init_scheduler_queues(global))
+	{
+		destroy_mutex(global, global->number_of_coders);
+		destroy_cond(global, global->number_of_coders);
+		free(global->dongles);
+		global->dongles = NULL;
+		return (0);
 	}
 	return (1);
 }

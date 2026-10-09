@@ -13,6 +13,10 @@
 #ifndef CODEXION_H
 # define CODEXION_H
 
+# ifndef _POSIX_C_SOURCE
+#  define _POSIX_C_SOURCE 200809L
+# endif
+
 # include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -26,6 +30,17 @@ enum	e_dongle_state
 	FREE,
 	TAKEN,
 };
+
+typedef struct s_fifo_request
+{
+	struct s_fifo_request	*next;
+}	t_fifo_request;
+
+typedef struct s_fifo_queue
+{
+	t_fifo_request		*front;
+	t_fifo_request		*back;
+}	t_fifo_queue;
 
 typedef struct s_dongle
 {
@@ -92,7 +107,7 @@ typedef struct s_global
 	t_dongle		*dongles;
 	t_coder			*coders;
 
-	void			*scheduler_queue;
+	t_fifo_queue	*scheduler_queue;
 }	t_global;
 
 int		parse_args(int ac, char **av, t_args *args);
@@ -102,6 +117,16 @@ int		thread_creation(t_global *global);
 void	*execute_thread(void *data);
 
 int		init_coders(t_global *global);
+
+int		init_scheduler_queues(t_global *global);
+void	destroy_scheduler_queues(t_global *global);
+void	*scheduler_get_queue(t_dongle *dongle);
+int		scheduler_queue_is_first(void *queue_ptr, t_fifo_request *request);
+void	scheduler_queue_push(void *queue_ptr, t_fifo_request *request);
+void	scheduler_queue_pop_front(void *queue_ptr);
+
+long	timestamp_ms(t_global *global);
+void	log_state(t_coder *coder, const char *state);
 
 void	acquire_dongles(t_coder *coder);
 int		drop_dongle(t_dongle *dongle);
