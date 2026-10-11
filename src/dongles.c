@@ -12,7 +12,6 @@
 
 #include <codexion.h>
 
-<<<<<<< HEAD
 static int	acquire_one_dongle(t_coder *coder, t_dongle *dongle)
 {
 	if (!take_dongle(coder, dongle))
@@ -44,26 +43,6 @@ int	acquire_dongles(t_coder *coder)
 		}
 	}
 	return (1);
-=======
-void	acquire_dongles(t_coder *coder)
-{
-	if (coder->id % 2 == 0)
-	{
-		take_dongle(coder->left_dongle);
-		log_state(coder, "has taken a dongle");
-
-		take_dongle(coder->right_dongle);
-		log_state(coder, "has taken a dongle");
-	}
-	else
-	{
-		take_dongle(coder->right_dongle);
-		log_state(coder, "has taken a dongle");
-
-		take_dongle(coder->left_dongle);
-		log_state(coder, "has taken a dongle");
-	}
->>>>>>> 68f497b8d68ae8cbedd2c0b0e8af99a9d9a6761f
 }
 
 int	init_dongles(t_global *global)
