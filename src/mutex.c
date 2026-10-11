@@ -54,7 +54,11 @@ int	init_global(t_global *global)
 {
 	if (global == NULL)
 		return (0);
+<<<<<<< HEAD
 	global->finished = 0;
+=======
+	clock_gettime(CLOCK_REALTIME, &global->start_time);
+>>>>>>> 68f497b8d68ae8cbedd2c0b0e8af99a9d9a6761f
 	if (pthread_mutex_init(&global->log_mutex, NULL) != 0)
 	{
 		fprintf(stderr, "%s", "Failed to initialize log mutex\\n");
@@ -91,6 +95,7 @@ int	destroy_global(t_global *global)
 
 	if (global == NULL)
 		return (0);
+<<<<<<< HEAD
 	error = 1;
 	destroy_scheduler_queues(global);
 	if (global->dongles != NULL)
@@ -119,6 +124,9 @@ int	destroy_global(t_global *global)
 		fprintf(stderr, "%s", "Failed to destroy finished mutex\\n");
 		error = 0;
 	}
+=======
+	destroy_scheduler_queues(global);
+>>>>>>> 68f497b8d68ae8cbedd2c0b0e8af99a9d9a6761f
 	if (pthread_mutex_destroy(&global->log_mutex) != 0)
 	{
 		fprintf(stderr, "%s", "Failed to destroy log mutex\\n");

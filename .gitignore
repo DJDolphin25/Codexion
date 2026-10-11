@@ -4,3 +4,5 @@ codexion
 codexion.exe
 *.o
 tests.c
+README.md
+cambios.md

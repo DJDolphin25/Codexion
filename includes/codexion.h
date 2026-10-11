@@ -33,18 +33,27 @@ enum	e_dongle_state
 
 typedef struct s_fifo_request
 {
+<<<<<<< HEAD
 	pthread_cond_t		request_cond;
 	unsigned long		order;
 	struct timespec		deadline;
+=======
+	struct s_fifo_request	*next;
+>>>>>>> 68f497b8d68ae8cbedd2c0b0e8af99a9d9a6761f
 }	t_fifo_request;
 
 typedef struct s_fifo_queue
 {
+<<<<<<< HEAD
 	t_fifo_request		**items;
 	int				size;
 	int				capacity;
 	unsigned long		next_order;
 	struct s_global		*global;
+=======
+	t_fifo_request		*front;
+	t_fifo_request		*back;
+>>>>>>> 68f497b8d68ae8cbedd2c0b0e8af99a9d9a6761f
 }	t_fifo_queue;
 
 typedef struct s_dongle
@@ -128,6 +137,7 @@ int		init_scheduler_queues(t_global *global);
 void	destroy_scheduler_queues(t_global *global);
 void	*scheduler_get_queue(t_dongle *dongle);
 int		scheduler_queue_is_first(void *queue_ptr, t_fifo_request *request);
+<<<<<<< HEAD
 void	*scheduler_queue_top(void *queue_ptr);
 void	scheduler_queue_push(void *queue_ptr, t_fifo_request *request);
 int		scheduler_queue_remove(void *queue_ptr, t_fifo_request *request);
@@ -142,10 +152,15 @@ int		request_is_before(t_fifo_queue *queue, t_fifo_request *first,
 void	swap_requests(t_fifo_request **first, t_fifo_request **second);
 void	bubble_up(t_fifo_queue *queue, int index);
 void	bubble_down(t_fifo_queue *queue, int index);
+=======
+void	scheduler_queue_push(void *queue_ptr, t_fifo_request *request);
+void	scheduler_queue_pop_front(void *queue_ptr);
+>>>>>>> 68f497b8d68ae8cbedd2c0b0e8af99a9d9a6761f
 
 long	timestamp_ms(t_global *global);
 void	log_state(t_coder *coder, const char *state);
 
+<<<<<<< HEAD
 int		simulation_is_finished(t_global *global);
 void	simulation_set_finished(t_global *global);
 int		all_coders_completed(t_global *global);
@@ -155,6 +170,9 @@ int		coder_burned_out(t_global *global, t_coder *coder,
 void	wake_all_requests(t_global *global);
 
 int		acquire_dongles(t_coder *coder);
+=======
+void	acquire_dongles(t_coder *coder);
+>>>>>>> 68f497b8d68ae8cbedd2c0b0e8af99a9d9a6761f
 int		drop_dongle(t_dongle *dongle);
 int		init_dongles(t_global *global);
 int		take_dongle(t_coder *coder, t_dongle *dongle);

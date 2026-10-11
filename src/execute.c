@@ -12,6 +12,7 @@
 
 #include <codexion.h>
 
+<<<<<<< HEAD
 static int	sleep_microseconds(long microseconds, t_global *global)
 {
 	int	status;
@@ -62,6 +63,25 @@ static int	compile_thread(t_coder *coder)
 		drop_dongle(coder->right_dongle);
 		return (0);
 	}
+=======
+static void	sleep_microseconds(long microseconds)
+{
+	struct timespec	request;
+
+	request.tv_sec = microseconds / 1000000L;
+	request.tv_nsec = (microseconds % 1000000L) * 1000L;
+	nanosleep(&request, NULL);
+}
+
+static void	compile_thread(t_coder *coder)
+{
+	int	compile_time;
+
+	compile_time = coder->global->time_to_compile * 1000;
+	acquire_dongles(coder);
+	log_state(coder, "is compiling");
+	sleep_microseconds(compile_time);
+>>>>>>> 68f497b8d68ae8cbedd2c0b0e8af99a9d9a6761f
 	drop_dongle(coder->left_dongle);
 	drop_dongle(coder->right_dongle);
 	return (!simulation_is_finished(coder->global));
@@ -71,22 +91,34 @@ static int	debug_thread(t_coder *coder)
 {
 	int	debug_time;
 
+<<<<<<< HEAD
 	if (simulation_is_finished(coder->global))
 		return (0);
 	debug_time = (long)coder->global->time_to_debug * 1000L;
 	log_state(coder, "is debugging");
 	return (sleep_microseconds(debug_time, coder->global));
+=======
+	debug_time = coder->global->time_to_debug * 1000;
+	log_state(coder, "is debugging");
+	sleep_microseconds(debug_time);
+>>>>>>> 68f497b8d68ae8cbedd2c0b0e8af99a9d9a6761f
 }
 
 static int	refactor_thread(t_coder *coder)
 {
 	int	refactoring_time;
 
+<<<<<<< HEAD
 	if (simulation_is_finished(coder->global))
 		return (0);
 	refactoring_time = (long)coder->global->time_to_refactor * 1000L;
 	log_state(coder, "is refactoring");
 	return (sleep_microseconds(refactoring_time, coder->global));
+=======
+	refactoring_time = coder->global->time_to_refactor * 1000;
+	log_state(coder, "is refactoring");
+	sleep_microseconds(refactoring_time);
+>>>>>>> 68f497b8d68ae8cbedd2c0b0e8af99a9d9a6761f
 }
 
 void	*execute_thread(void *data)
