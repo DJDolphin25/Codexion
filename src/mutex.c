@@ -54,22 +54,75 @@ int	init_global(t_global *global)
 {
 	if (global == NULL)
 		return (0);
+	global->finished = 0;
 	if (pthread_mutex_init(&global->log_mutex, NULL) != 0)
 	{
-		fprintf(stderr, "%s", "Failed to initialize log mutex\n");
+		fprintf(stderr, "%s", "Failed to initialize log mutex\\n");
 		return (0);
 	}
+	if (pthread_mutex_init(&global->finished_mutex, NULL) != 0)
+	{
+		fprintf(stderr, "%s", "Failed to initialize finished mutex\\n");
+		pthread_mutex_destroy(&global->log_mutex);
+		return (0);
+	}
+	if (pthread_mutex_init(&global->scheduler_mutex, NULL) != 0)
+	{
+		fprintf(stderr, "%s", "Failed to initialize scheduler mutex\\n");
+		pthread_mutex_destroy(&global->finished_mutex);
+		pthread_mutex_destroy(&global->log_mutex);
+		return (0);
+	}
+	if (pthread_cond_init(&global->scheduler_cond, NULL) != 0)
+	{
+		fprintf(stderr, "%s", "Failed to initialize scheduler condition\\n");
+		pthread_mutex_destroy(&global->scheduler_mutex);
+		pthread_mutex_destroy(&global->finished_mutex);
+		pthread_mutex_destroy(&global->log_mutex);
+		return (0);
+	}
+	clock_gettime(CLOCK_REALTIME, &global->start_time);
 	return (1);
 }
 
 int	destroy_global(t_global *global)
 {
+	int	error;
+
 	if (global == NULL)
 		return (0);
+	error = 1;
+	destroy_scheduler_queues(global);
+	if (global->dongles != NULL)
+	{
+		if (!destroy_mutex(global, global->number_of_coders))
+			error = 0;
+		if (!destroy_cond(global, global->number_of_coders))
+			error = 0;
+		free(global->dongles);
+		global->dongles = NULL;
+	}
+	free(global->coders);
+	global->coders = NULL;
+	if (pthread_cond_destroy(&global->scheduler_cond) != 0)
+	{
+		fprintf(stderr, "%s", "Failed to destroy scheduler condition\\n");
+		error = 0;
+	}
+	if (pthread_mutex_destroy(&global->scheduler_mutex) != 0)
+	{
+		fprintf(stderr, "%s", "Failed to destroy scheduler mutex\\n");
+		error = 0;
+	}
+	if (pthread_mutex_destroy(&global->finished_mutex) != 0)
+	{
+		fprintf(stderr, "%s", "Failed to destroy finished mutex\\n");
+		error = 0;
+	}
 	if (pthread_mutex_destroy(&global->log_mutex) != 0)
 	{
-		fprintf(stderr, "%s", "Failed to destroy log mutex\n");
-		return (0);
+		fprintf(stderr, "%s", "Failed to destroy log mutex\\n");
+		error = 0;
 	}
-	return (1);
+	return (error);
 }

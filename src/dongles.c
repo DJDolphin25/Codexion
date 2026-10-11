@@ -12,109 +12,55 @@
 
 #include <codexion.h>
 
-int	take_dongle(t_dongle *dongle)
+static int	acquire_one_dongle(t_coder *coder, t_dongle *dongle)
 {
-	while (dongle->state != FREE)
-	{
-		pthread_mutex_lock(&dongle->state_lock);
-		if (dongle->state == TAKEN)
-			pthread_cond_wait(&dongle->available_cond, &dongle->state_lock);
-		else if (dongle->state == COOLDOWN)
-		{
-			clock_gettime(CLOCK_REALTIME, &dongle->now);
-			dongle->target_time = dongle->last_release;
-			dongle->target_time.tv_nsec += dongle->global->dongle_cooldown * 1000000;
-			{
-				if (dongle->target_time.tv_nsec >= 1000000000)
-				{
-					dongle->target_time.tv_sec += dongle->target_time.tv_nsec / 1000000000;
-					dongle->target_time.tv_nsec %= 1000000000
-					;
-				}
-				if (dongle->now.tv_sec < dongle->target_time.tv_sec ||
-					(dongle->now.tv_sec == dongle->target_time.tv_sec &&
-					dongle->now.tv_nsec < dongle->target_time.tv_nsec ))
-					pthread_cond_timedwait(&dongle->available_cond, &dongle->state_lock,
-					&dongle->target_time);
-				else
-					dongle->state = FREE;
-			}
-		}
-	}
-	dongle->state = TAKEN;
-	pthread_mutex_unlock(&dongle->state_lock);
+	if (!take_dongle(coder, dongle))
+		return (0);
+	log_state(coder, "has taken a dongle");
 	return (1);
 }
 
-int	drop_dongle(t_dongle *dongle)
+int	acquire_dongles(t_coder *coder)
 {
-	pthread_mutex_lock(&dongle->state_lock);
-	dongle->state = COOLDOWN;
-	clock_gettime(CLOCK_REALTIME, &dongle->last_release);
-	pthread_cond_signal(&dongle->available_cond);
-	pthread_mutex_unlock(&dongle->state_lock);
-	return (1);
-}
-
-void	acquire_dongles(t_coder *coder)
-{
-	t_global *global;
-
-    global = coder->left_dongle->global;
 	if (coder->id % 2 == 0)
 	{
-		pthread_mutex_lock(&global->log_mutex);
-        fprintf(stderr, "[Coder %d] Esperando dongle izq #%td\n",
-            coder->id, coder->left_dongle - global->dongles);
-        pthread_mutex_unlock(&global->log_mutex);
-		
-		take_dongle(coder->left_dongle);
-
-		pthread_mutex_lock(&global->log_mutex);
-        fprintf(stderr, "[Coder %d] Tomado izq #%td. Esperando der #%td\n",
-            coder->id, coder->left_dongle - global->dongles, coder->right_dongle - global->dongles);
-        pthread_mutex_unlock(&global->log_mutex);
-		
-		take_dongle(coder->right_dongle);
+		if (!acquire_one_dongle(coder, coder->left_dongle))
+			return (0);
+		if (!acquire_one_dongle(coder, coder->right_dongle))
+		{
+			drop_dongle(coder->left_dongle);
+			return (0);
+		}
 	}
 	else
 	{
-		pthread_mutex_lock(&global->log_mutex);
-        fprintf(stderr, "[Coder %d] Esperando dongle der #%td\n",
-            coder->id, coder->right_dongle - global->dongles);
-        pthread_mutex_unlock(&global->log_mutex);
-		
-		take_dongle(coder->right_dongle);
-		
-		pthread_mutex_lock(&global->log_mutex);
-        fprintf(stderr, "[Coder %d] Tomado der #%td. Esperando izq #%td\n",
-            coder->id, coder->right_dongle - global->dongles, coder->left_dongle - global->dongles);
-        pthread_mutex_unlock(&global->log_mutex);
-		
-		take_dongle(coder->left_dongle);
+		if (!acquire_one_dongle(coder, coder->right_dongle))
+			return (0);
+		if (!acquire_one_dongle(coder, coder->left_dongle))
+		{
+			drop_dongle(coder->right_dongle);
+			return (0);
+		}
 	}
-	pthread_mutex_lock(&global->log_mutex);
-    fprintf(stderr, "[Coder %d] AMBOS DONGLES CONSEGUIDOS (#%td y #%td)\n",
-        coder->id, coder->left_dongle - global->dongles, coder->right_dongle - global->dongles);
-    pthread_mutex_unlock(&global->log_mutex);
+	return (1);
 }
 
 int	init_dongles(t_global *global)
 {
 	int		i;
-	enum 	e_dongle_state condition;
 
 	global->dongles = malloc(sizeof(t_dongle) * global->number_of_coders);
 	if (!global->dongles)
 		return (0);
 	i = 0;
-	condition = FREE;
 	while (i < global->number_of_coders)
 	{
 		if (pthread_mutex_init(&global->dongles[i].state_lock, NULL) != 0)
 		{
 			fprintf(stderr, "Failed to mutex dongle %d\n", i);
 			destroy_mutex(global, i);
+			free(global->dongles);
+			global->dongles = NULL;
 			return (0);
 		}
 		if (pthread_cond_init(&global->dongles[i].available_cond, NULL) != 0)
@@ -127,10 +73,18 @@ int	init_dongles(t_global *global)
 			return (0);
 		}
 		global->dongles[i].global = global;
-		global->dongles[i].state = condition;
+		global->dongles[i].state = FREE;
 		global->dongles[i].last_release.tv_sec = 0;
 		global->dongles[i].last_release.tv_nsec = 0;
 		i++;
+	}
+	if (!init_scheduler_queues(global))
+	{
+		destroy_mutex(global, global->number_of_coders);
+		destroy_cond(global, global->number_of_coders);
+		free(global->dongles);
+		global->dongles = NULL;
+		return (0);
 	}
 	return (1);
 }

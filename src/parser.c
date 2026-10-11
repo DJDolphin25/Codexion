@@ -88,7 +88,7 @@ static int	conversion(int i, char *str, t_args *args)
 	else if (i == 6)
 		args->number_of_compiles_required = value;
 	else if (i == 7)
-		args->dongle_cooldown = (long)value * 1000;
+		args->dongle_cooldown = (long)value;
 	return (1);
 }
 
@@ -98,6 +98,7 @@ int	transfer_to_global(t_global *global, t_args *args)
 		return (0);
 	else
 	{
+		memset(global, 0, sizeof(t_global));
 		global->finished = 0;
 		global->number_of_coders = args->number_of_coders;
 		global->time_to_burnout = args->time_to_burnout;
@@ -107,7 +108,6 @@ int	transfer_to_global(t_global *global, t_args *args)
 		global->number_of_compiles_required = args->number_of_compiles_required;
 		global->dongle_cooldown = args->dongle_cooldown;
 		global->scheduler = args->scheduler;
-		global->dongles = NULL;
 		return (1);
 	}
 }
