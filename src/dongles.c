@@ -12,24 +12,37 @@
 
 #include <codexion.h>
 
-void	acquire_dongles(t_coder *coder)
+static int	acquire_one_dongle(t_coder *coder, t_dongle *dongle)
+{
+	if (!take_dongle(coder, dongle))
+		return (0);
+	log_state(coder, "has taken a dongle");
+	return (1);
+}
+
+int	acquire_dongles(t_coder *coder)
 {
 	if (coder->id % 2 == 0)
 	{
-		take_dongle(coder->left_dongle);
-		log_state(coder, "has taken a dongle");
-
-		take_dongle(coder->right_dongle);
-		log_state(coder, "has taken a dongle");
+		if (!acquire_one_dongle(coder, coder->left_dongle))
+			return (0);
+		if (!acquire_one_dongle(coder, coder->right_dongle))
+		{
+			drop_dongle(coder->left_dongle);
+			return (0);
+		}
 	}
 	else
 	{
-		take_dongle(coder->right_dongle);
-		log_state(coder, "has taken a dongle");
-
-		take_dongle(coder->left_dongle);
-		log_state(coder, "has taken a dongle");
+		if (!acquire_one_dongle(coder, coder->right_dongle))
+			return (0);
+		if (!acquire_one_dongle(coder, coder->left_dongle))
+		{
+			drop_dongle(coder->right_dongle);
+			return (0);
+		}
 	}
+	return (1);
 }
 
 int	init_dongles(t_global *global)

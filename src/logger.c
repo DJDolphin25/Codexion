@@ -21,6 +21,11 @@ long	timestamp_ms(t_global *global)
 	clock_gettime(CLOCK_REALTIME, &current);
 	seconds = current.tv_sec - global->start_time.tv_sec;
 	nanoseconds = current.tv_nsec - global->start_time.tv_nsec;
+	if (nanoseconds < 0)
+	{
+		seconds--;
+		nanoseconds += 1000000000L;
+	}
 	return (seconds * 1000L + nanoseconds / 1000000L);
 }
 
