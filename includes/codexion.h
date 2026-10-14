@@ -36,6 +36,10 @@ typedef struct s_fifo_request
 	pthread_cond_t		request_cond;
 	unsigned long		order;
 	struct timespec		deadline;
+	pthread_cond_t		request_cond;
+	unsigned long		order;
+	struct timespec		deadline;
+	struct s_fifo_request	*next;
 }	t_fifo_request;
 
 typedef struct s_fifo_queue
@@ -45,6 +49,9 @@ typedef struct s_fifo_queue
 	int				capacity;
 	unsigned long		next_order;
 	struct s_global		*global;
+
+	t_fifo_request		*front;
+	t_fifo_request		*back;
 }	t_fifo_queue;
 
 typedef struct s_dongle
@@ -128,6 +135,7 @@ int		init_scheduler_queues(t_global *global);
 void	destroy_scheduler_queues(t_global *global);
 void	*scheduler_get_queue(t_dongle *dongle);
 int		scheduler_queue_is_first(void *queue_ptr, t_fifo_request *request);
+
 void	*scheduler_queue_top(void *queue_ptr);
 void	scheduler_queue_push(void *queue_ptr, t_fifo_request *request);
 int		scheduler_queue_remove(void *queue_ptr, t_fifo_request *request);
@@ -142,9 +150,12 @@ int		request_is_before(t_fifo_queue *queue, t_fifo_request *first,
 void	swap_requests(t_fifo_request **first, t_fifo_request **second);
 void	bubble_up(t_fifo_queue *queue, int index);
 void	bubble_down(t_fifo_queue *queue, int index);
+void	scheduler_queue_push(void *queue_ptr, t_fifo_request *request);
+
 
 long	timestamp_ms(t_global *global);
 void	log_state(t_coder *coder, const char *state);
+
 
 int		simulation_is_finished(t_global *global);
 void	simulation_set_finished(t_global *global);
