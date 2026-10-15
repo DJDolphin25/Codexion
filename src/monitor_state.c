@@ -28,7 +28,8 @@ int	all_coders_completed(t_global *global)
 	index = 0;
 	while (index < global->number_of_coders)
 	{
-		if (global->coders[index].compiles_done < global->number_of_compiles_required)
+		if (global->coders[index].compiles_done
+			< global->number_of_compiles_required)
 		{
 			done = 0;
 			break ;

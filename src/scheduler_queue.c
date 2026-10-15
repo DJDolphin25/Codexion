@@ -5,14 +5,14 @@ int	init_scheduler_queues(t_global *global)
 	int	i;
 
 	global->scheduler_queue = malloc(sizeof(t_fifo_queue)
-		* global->number_of_coders);
+			* global->number_of_coders);
 	if (global->scheduler_queue == NULL)
 		return (0);
 	i = 0;
 	while (i < global->number_of_coders)
 	{
 		global->scheduler_queue[i].items = malloc(sizeof(t_fifo_request *)
-			* global->number_of_coders);
+				* global->number_of_coders);
 		if (global->scheduler_queue[i].items == NULL)
 		{
 			while (--i >= 0)

@@ -25,8 +25,8 @@ void	*scheduler_queue_top(void *queue_ptr)
 
 void	scheduler_queue_signal_all(void *queue_ptr)
 {
+	int				index;
 	t_fifo_queue	*queue;
-	int			index;
 
 	queue = (t_fifo_queue *)queue_ptr;
 	index = 0;

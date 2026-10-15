@@ -16,7 +16,8 @@ int	main(int ac, char **av)
 {
 	t_args		args;
 	t_global	global;
-if (ac != 9)
+
+	if (ac != 9)
 	{
 		fprintf(stderr, "%s", "Number of arguments different from 9.\\n");
 		return (1);

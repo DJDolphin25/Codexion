@@ -63,15 +63,6 @@ int	init_dongles(t_global *global)
 			global->dongles = NULL;
 			return (0);
 		}
-		if (pthread_cond_init(&global->dongles[i].available_cond, NULL) != 0)
-		{
-			fprintf(stderr, "Failed to cond dongle %d\n", i);
-			destroy_mutex(global, i);
-			destroy_cond(global, i);
-			free(global->dongles);
-			global->dongles = NULL;
-			return (0);
-		}
 		global->dongles[i].global = global;
 		global->dongles[i].state = FREE;
 		global->dongles[i].last_release.tv_sec = 0;
@@ -81,7 +72,6 @@ int	init_dongles(t_global *global)
 	if (!init_scheduler_queues(global))
 	{
 		destroy_mutex(global, global->number_of_coders);
-		destroy_cond(global, global->number_of_coders);
 		free(global->dongles);
 		global->dongles = NULL;
 		return (0);

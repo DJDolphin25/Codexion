@@ -2,9 +2,12 @@
 
 void	*monitor_thread(void *data)
 {
-	t_global		*global;
-	int			index;
+	int				compiles_done;
+	int				status;
+	int				index;
 	struct timespec	current;
+	struct timespec	deadline;
+	t_global		*global;
 
 	global = (t_global *)data;
 	while (!simulation_is_finished(global))
@@ -17,8 +20,6 @@ void	*monitor_thread(void *data)
 		index = 0;
 		while (index < global->number_of_coders)
 		{
-			int	compiles_done;
-
 			pthread_mutex_lock(&global->finished_mutex);
 			compiles_done = global->coders[index].compiles_done;
 			pthread_mutex_unlock(&global->finished_mutex);
@@ -33,9 +34,6 @@ void	*monitor_thread(void *data)
 			index++;
 		}
 		{
-			struct timespec	deadline;
-			int				status;
-
 			clock_gettime(CLOCK_REALTIME, &deadline);
 			deadline.tv_nsec += 1000000L;
 			if (deadline.tv_nsec >= 1000000000L)
@@ -45,7 +43,7 @@ void	*monitor_thread(void *data)
 			}
 			pthread_mutex_lock(&global->finished_mutex);
 			status = 0;
-			while (!global->finished && status !=  && status == 0)
+			while (!global->finished && status == 0)
 				status = pthread_cond_timedwait(&global->scheduler_cond,
 						&global->finished_mutex, &deadline);
 			pthread_mutex_unlock(&global->finished_mutex);

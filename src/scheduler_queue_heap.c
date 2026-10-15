@@ -55,7 +55,8 @@ void	bubble_down(t_fifo_queue *queue, int index)
 			&& request_is_before(queue, queue->items[left], queue->items[best]))
 			best = left;
 		if (right < queue->size
-			&& request_is_before(queue, queue->items[right], queue->items[best]))
+			&& request_is_before(queue, queue->items[right],
+				queue->items[best]))
 			best = right;
 		if (best == index)
 			break ;

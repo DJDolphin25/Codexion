@@ -1,6 +1,7 @@
 #include <codexion.h>
 
-static void	request_deadline_from_coder(t_coder *coder, struct timespec *deadline)
+static void	request_deadline_from_coder(t_coder *coder,
+	struct timespec *deadline)
 {
 	pthread_mutex_lock(&coder->global->finished_mutex);
 	*deadline = coder->last_compile_start;

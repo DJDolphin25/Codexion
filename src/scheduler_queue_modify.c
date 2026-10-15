@@ -2,8 +2,8 @@
 
 void	scheduler_queue_push(void *queue_ptr, t_fifo_request *request)
 {
+	int				index;
 	t_fifo_queue	*queue;
-	int			index;
 
 	queue = (t_fifo_queue *)queue_ptr;
 	request->order = queue->next_order++;
@@ -15,9 +15,9 @@ void	scheduler_queue_push(void *queue_ptr, t_fifo_request *request)
 
 int	scheduler_queue_remove(void *queue_ptr, t_fifo_request *request)
 {
+	int				index;
+	int				last_index;
 	t_fifo_queue	*queue;
-	int			index;
-	int			last_index;
 
 	queue = (t_fifo_queue *)queue_ptr;
 	index = 0;
@@ -45,9 +45,9 @@ int	scheduler_queue_remove(void *queue_ptr, t_fifo_request *request)
 
 t_fifo_request	*scheduler_queue_pop_front(void *queue_ptr)
 {
+	int				last_index;
 	t_fifo_queue	*queue;
 	t_fifo_request	*top;
-	int			last_index;
 
 	queue = (t_fifo_queue *)queue_ptr;
 	if (queue->size == 0)

@@ -23,8 +23,8 @@ static int	join_coders(t_global *global, int limit)
 	{
 		if (pthread_join(global->coders[i].thread_id, NULL) != 0)
 		{
-			fprintf(stderr, "Failed to join thread %lu\n",
-				global->coders[i].thread_id);
+			fprintf(stderr, "Failed to join coder %d thread\n",
+				global->coders[i].id);
 			error = 0;
 		}
 		i++;
@@ -42,8 +42,8 @@ static int	create_coders(t_global *global, int *created)
 		if (pthread_create(&global->coders[i].thread_id, NULL,
 				execute_thread, &global->coders[i]) != 0)
 		{
-			fprintf(stderr, "Failed to create thread %lu\n",
-				global->coders[i].thread_id);
+			fprintf(stderr, "Failed to create coder %d thread\n",
+				global->coders[i].id);
 			*created = i;
 			return (0);
 		}

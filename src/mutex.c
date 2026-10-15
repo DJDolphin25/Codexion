@@ -31,25 +31,6 @@ int	destroy_mutex(t_global *global, int limit)
 	return (error);
 }
 
-int	destroy_cond(t_global *global, int limit)
-{
-	int	i;
-	int	error;
-
-	i = 0;
-	error = 1;
-	while (i < limit)
-	{
-		if (pthread_cond_destroy(&global->dongles[i].available_cond) != 0)
-		{
-			fprintf(stderr, "Failed to destroy cond %d\n", i);
-			error = 0;
-		}
-		i++;
-	}
-	return (error);
-}
-
 int	init_global(t_global *global)
 {
 	if (global == NULL)
@@ -66,17 +47,9 @@ int	init_global(t_global *global)
 		pthread_mutex_destroy(&global->log_mutex);
 		return (0);
 	}
-	if (pthread_mutex_init(&global->scheduler_mutex, NULL) != 0)
-	{
-		fprintf(stderr, "%s", "Failed to initialize scheduler mutex\\n");
-		pthread_mutex_destroy(&global->finished_mutex);
-		pthread_mutex_destroy(&global->log_mutex);
-		return (0);
-	}
 	if (pthread_cond_init(&global->scheduler_cond, NULL) != 0)
 	{
 		fprintf(stderr, "%s", "Failed to initialize scheduler condition\\n");
-		pthread_mutex_destroy(&global->scheduler_mutex);
 		pthread_mutex_destroy(&global->finished_mutex);
 		pthread_mutex_destroy(&global->log_mutex);
 		return (0);
@@ -97,8 +70,6 @@ int	destroy_global(t_global *global)
 	{
 		if (!destroy_mutex(global, global->number_of_coders))
 			error = 0;
-		if (!destroy_cond(global, global->number_of_coders))
-			error = 0;
 		free(global->dongles);
 		global->dongles = NULL;
 	}
@@ -107,11 +78,6 @@ int	destroy_global(t_global *global)
 	if (pthread_cond_destroy(&global->scheduler_cond) != 0)
 	{
 		fprintf(stderr, "%s", "Failed to destroy scheduler condition\\n");
-		error = 0;
-	}
-	if (pthread_mutex_destroy(&global->scheduler_mutex) != 0)
-	{
-		fprintf(stderr, "%s", "Failed to destroy scheduler mutex\\n");
 		error = 0;
 	}
 	if (pthread_mutex_destroy(&global->finished_mutex) != 0)

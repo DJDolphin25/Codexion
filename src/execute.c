@@ -14,7 +14,7 @@
 
 static int	sleep_microseconds(long microseconds, t_global *global)
 {
-	int	status;
+	int				status;
 	struct timespec	deadline;
 
 	clock_gettime(CLOCK_REALTIME, &deadline);
@@ -26,7 +26,7 @@ static int	sleep_microseconds(long microseconds, t_global *global)
 	{
 		status = pthread_cond_timedwait(&global->scheduler_cond,
 				&global->finished_mutex, &deadline);
-		if (status == )
+		if (status == ETIMEDOUT)
 			break ;
 		if (status != 0)
 		{
@@ -39,17 +39,23 @@ static int	sleep_microseconds(long microseconds, t_global *global)
 	return (status);
 }
 
+static void	release_dongles(t_coder *coder)
+{
+	drop_dongle(coder->left_dongle);
+	if (coder->left_dongle != coder->right_dongle)
+		drop_dongle(coder->right_dongle);
+}
+
 static int	compile_thread(t_coder *coder)
 {
-	int	compile_time;
+	long	compile_time;
 
 	compile_time = (long)coder->global->time_to_compile * 1000L;
 	if (!acquire_dongles(coder))
 		return (0);
 	if (simulation_is_finished(coder->global))
 	{
-		drop_dongle(coder->left_dongle);
-		drop_dongle(coder->right_dongle);
+		release_dongles(coder);
 		return (0);
 	}
 	pthread_mutex_lock(&coder->global->finished_mutex);
@@ -58,18 +64,16 @@ static int	compile_thread(t_coder *coder)
 	log_state(coder, "is compiling");
 	if (!sleep_microseconds(compile_time, coder->global))
 	{
-		drop_dongle(coder->left_dongle);
-		drop_dongle(coder->right_dongle);
+		release_dongles(coder);
 		return (0);
 	}
-	drop_dongle(coder->left_dongle);
-	drop_dongle(coder->right_dongle);
+	release_dongles(coder);
 	return (!simulation_is_finished(coder->global));
 }
 
 static int	debug_thread(t_coder *coder)
 {
-	int	debug_time;
+	long	debug_time;
 
 	if (simulation_is_finished(coder->global))
 		return (0);
@@ -80,7 +84,7 @@ static int	debug_thread(t_coder *coder)
 
 static int	refactor_thread(t_coder *coder)
 {
-	int	refactoring_time;
+	long	refactoring_time;
 
 	if (simulation_is_finished(coder->global))
 		return (0);

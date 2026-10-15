@@ -69,7 +69,7 @@ static int	conversion(int i, char *str, t_args *args)
 	int	value;
 
 	value = atoi(str);
-	if (value <= 0)
+	if (value < 0 || (value == 0 && i != 7))
 	{
 		fprintf(stderr, "Argument %d '%s'", i, str);
 		fprintf(stderr, "%s", " must be greater than 0\n");
