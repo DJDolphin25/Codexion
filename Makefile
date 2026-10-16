@@ -4,7 +4,7 @@ NAME = codexion
 
 # Compiler and flags
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread -I includes
+CFLAGS = -Wall -Wextra -Werror -pthread -I includes 
 
 	
 # Source files
@@ -21,7 +21,7 @@ SRC = src/coders.c \
 		src/scheduler_queue_access.c \
 		src/scheduler_queue_heap.c \
 		src/scheduler_queue_modify.c \
-		src/scheduler_queue.c \	
+		src/scheduler_queue.c \
 		src/scheduler_time.c \
 		src/scheduler.c \
 		src/threads.c
