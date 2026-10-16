@@ -10,20 +10,20 @@ CFLAGS = -Wall -Wextra -Werror -pthread -I includes -g
 # Source files
 SRC = src/coders.c \
 		src/dongles.c \
-		src/scheduler_queue.c \
-		src/scheduler_queue_heap.c \
-		src/scheduler_queue_access.c \
-		src/scheduler_queue_modify.c \
-		src/scheduler_time.c \
-		src/scheduler.c \
-		src/logger.c \
-		src/monitor_state.c \
-		src/monitor_burnout.c \
-		src/monitor_thread.c \
 		src/execute.c \
+		src/logger.c \
 		src/main.c \
+		src/monitor_burnout.c \
+		src/monitor_state.c \
+		src/monitor_thread.c \
 		src/mutex.c \
 		src/parser.c \
+		src/scheduler_queue_access.c \
+		src/scheduler_queue_heap.c \
+		src/scheduler_queue_modify.c \
+		src/scheduler_queue.c \	
+		src/scheduler_time.c \
+		src/scheduler.c \
 		src/threads.c
 
 
