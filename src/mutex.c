@@ -36,6 +36,7 @@ int	init_global(t_global *global)
 	if (global == NULL)
 		return (0);
 	global->finished = 0;
+	pthread_cond_init(&global->finish_cond, NULL);
 	if (pthread_mutex_init(&global->log_mutex, NULL) != 0)
 	{
 		fprintf(stderr, "%s", "Failed to initialize log mutex\\n");
@@ -58,6 +59,30 @@ int	init_global(t_global *global)
 	return (1);
 }
 
+static int	destroy_sync(t_global *global)
+{
+	int	error;
+
+	error = 1;
+	if (pthread_cond_destroy(&global->scheduler_cond) != 0)
+	{
+		fprintf(stderr, "%s", "Failed to destroy scheduler condition\n");
+		error = 0;
+	}
+	if (pthread_mutex_destroy(&global->finished_mutex) != 0)
+	{
+		fprintf(stderr, "%s", "Failed to destroy finished mutex\n");
+		error = 0;
+	}
+	if (pthread_mutex_destroy(&global->log_mutex) != 0)
+	{
+		fprintf(stderr, "%s", "Failed to destroy log mutex\n");
+		error = 0;
+	}
+	pthread_cond_destroy(&global->finish_cond);
+	return (error);
+}
+
 int	destroy_global(t_global *global)
 {
 	int	error;
@@ -75,20 +100,7 @@ int	destroy_global(t_global *global)
 	}
 	free(global->coders);
 	global->coders = NULL;
-	if (pthread_cond_destroy(&global->scheduler_cond) != 0)
-	{
-		fprintf(stderr, "%s", "Failed to destroy scheduler condition\\n");
+	if (!destroy_sync(global))
 		error = 0;
-	}
-	if (pthread_mutex_destroy(&global->finished_mutex) != 0)
-	{
-		fprintf(stderr, "%s", "Failed to destroy finished mutex\\n");
-		error = 0;
-	}
-	if (pthread_mutex_destroy(&global->log_mutex) != 0)
-	{
-		fprintf(stderr, "%s", "Failed to destroy log mutex\\n");
-		error = 0;
-	}
 	return (error);
 }

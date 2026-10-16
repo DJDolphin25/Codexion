@@ -1,4 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   scheduler_queue.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/10/15 21:09:38 by theoppon          #+#    #+#             */
+/*   Updated: 2026/10/15 21:09:39 by theoppon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <codexion.h>
+
+static void	free_queues(t_global *global, int count)
+{
+	while (--count >= 0)
+		free(global->scheduler_queue[count].items);
+	free(global->scheduler_queue);
+	global->scheduler_queue = NULL;
+}
 
 int	init_scheduler_queues(t_global *global)
 {
@@ -15,10 +35,7 @@ int	init_scheduler_queues(t_global *global)
 				* global->number_of_coders);
 		if (global->scheduler_queue[i].items == NULL)
 		{
-			while (--i >= 0)
-				free(global->scheduler_queue[i].items);
-			free(global->scheduler_queue);
-			global->scheduler_queue = NULL;
+			free_queues(global, i);
 			return (0);
 		}
 		global->scheduler_queue[i].size = 0;

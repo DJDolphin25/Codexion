@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   scheduler_queue_modify.c                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/10/15 21:10:00 by theoppon          #+#    #+#             */
+/*   Updated: 2026/10/15 21:10:01 by theoppon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <codexion.h>
 
 void	scheduler_queue_push(void *queue_ptr, t_fifo_request *request)
@@ -13,6 +25,16 @@ void	scheduler_queue_push(void *queue_ptr, t_fifo_request *request)
 	bubble_up(queue, index);
 }
 
+static int	find_request(t_fifo_queue *queue, t_fifo_request *request)
+{
+	int	index;
+
+	index = 0;
+	while (index < queue->size && queue->items[index] != request)
+		index++;
+	return (index);
+}
+
 int	scheduler_queue_remove(void *queue_ptr, t_fifo_request *request)
 {
 	int				index;
@@ -20,9 +42,7 @@ int	scheduler_queue_remove(void *queue_ptr, t_fifo_request *request)
 	t_fifo_queue	*queue;
 
 	queue = (t_fifo_queue *)queue_ptr;
-	index = 0;
-	while (index < queue->size && queue->items[index] != request)
-		index++;
+	index = find_request(queue, request);
 	if (index == queue->size)
 		return (0);
 	last_index = queue->size - 1;

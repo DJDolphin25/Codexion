@@ -45,22 +45,33 @@ int	acquire_dongles(t_coder *coder)
 	return (1);
 }
 
-int	init_dongles(t_global *global)
+int	drop_dongle(t_dongle *dongle)
 {
-	int		i;
+	t_fifo_request	*top;
+	t_fifo_queue	*queue;
 
-	global->dongles = malloc(sizeof(t_dongle) * global->number_of_coders);
-	if (!global->dongles)
-		return (0);
+	pthread_mutex_lock(&dongle->state_lock);
+	dongle->state = COOLDOWN;
+	clock_gettime(CLOCK_REALTIME, &dongle->last_release);
+	queue = scheduler_get_queue(dongle);
+	top = scheduler_queue_top(queue);
+	if (top != NULL)
+		pthread_cond_signal(&top->request_cond);
+	pthread_mutex_unlock(&dongle->state_lock);
+	return (1);
+}
+
+static int	init_dongle_locks(t_global *global)
+{
+	int	i;
+
 	i = 0;
 	while (i < global->number_of_coders)
 	{
 		if (pthread_mutex_init(&global->dongles[i].state_lock, NULL) != 0)
 		{
-			fprintf(stderr, "Failed to mutex dongle %d\n", i);
+			fprintf(stderr, "Failed to init mutex of dongle %d\n", i);
 			destroy_mutex(global, i);
-			free(global->dongles);
-			global->dongles = NULL;
 			return (0);
 		}
 		global->dongles[i].global = global;
@@ -68,6 +79,20 @@ int	init_dongles(t_global *global)
 		global->dongles[i].last_release.tv_sec = 0;
 		global->dongles[i].last_release.tv_nsec = 0;
 		i++;
+	}
+	return (1);
+}
+
+int	init_dongles(t_global *global)
+{
+	global->dongles = malloc(sizeof(t_dongle) * global->number_of_coders);
+	if (!global->dongles)
+		return (0);
+	if (!init_dongle_locks(global))
+	{
+		free(global->dongles);
+		global->dongles = NULL;
+		return (0);
 	}
 	if (!init_scheduler_queues(global))
 	{

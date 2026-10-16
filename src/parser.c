@@ -14,21 +14,6 @@
 
 static int	parse_scheduler(char *str, t_args *args)
 {
-	char	*s;
-
-	s = str;
-	while (*s)
-	{
-		if (!((*s >= 'A' && *s <= 'Z') || (*s >= 'a' && *s <= 'z')))
-		{
-			fprintf(stderr, "%s", "Last argument should only contain ");
-			fprintf(stderr, "%s", "alphabetical characters\n");
-			return (0);
-		}
-		else if (*s >= 'A' && *s <= 'Z')
-			*s += 32;
-		s++;
-	}
 	if (!(strcmp(str, "fifo") == 0 || strcmp(str, "edf") == 0))
 	{
 		fprintf(stderr, "%s", "Last argument should either be ");

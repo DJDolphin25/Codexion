@@ -101,15 +101,16 @@ typedef struct s_global
 
 	char			*scheduler;
 
+	pthread_t		monitor_thread_id;
+	pthread_cond_t	finish_cond;
+	pthread_cond_t	scheduler_cond;
 	pthread_mutex_t	finished_mutex;
 	pthread_mutex_t	log_mutex;
-	pthread_cond_t	scheduler_cond;
-	pthread_t		monitor_thread_id;
 
 	struct timespec	start_time;
-
-	t_dongle		*dongles;
+	
 	t_coder			*coders;
+	t_dongle		*dongles;
 
 	t_fifo_queue	*scheduler_queue;
 }	t_global;
@@ -134,9 +135,11 @@ int				take_dongle(t_coder *coder, t_dongle *dongle);
 int				cooldown_expired(t_dongle *dongle, struct timespec *target);
 int				init_scheduler_queues(t_global *global);
 int				request_is_before(t_fifo_queue *queue, t_fifo_request *first,
-								  t_fifo_request *second);
-int				scheduler_queue_is_first(void *queue_ptr, t_fifo_request *request);
-int				scheduler_queue_remove(void *queue_ptr, t_fifo_request *request);
+					t_fifo_request *second);
+int				scheduler_queue_is_first(void *queue_ptr,
+					t_fifo_request *request);
+int				scheduler_queue_remove(void *queue_ptr,
+					t_fifo_request *request);
 t_fifo_request	*scheduler_queue_pop_front(void *queue_ptr);
 void			*scheduler_get_queue(t_dongle *dongle);
 void			*scheduler_queue_top(void *queue_ptr);
@@ -156,7 +159,7 @@ void			log_state(t_coder *coder, const char *state);
 /* Monitor */
 int				all_coders_completed(t_global *global);
 int				coder_burned_out(t_global *global, t_coder *coder,
-								struct timespec *current);
+					struct timespec *current);
 int				simulation_is_finished(t_global *global);
 void			*monitor_thread(void *data);
 void			simulation_set_finished(t_global *global);

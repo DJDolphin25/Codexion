@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitor_state.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: theoppon <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/10/15 21:06:25 by theoppon          #+#    #+#             */
+/*   Updated: 2026/10/15 21:06:27 by theoppon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <codexion.h>
 
 int	simulation_is_finished(t_global *global)
@@ -14,7 +26,7 @@ void	simulation_set_finished(t_global *global)
 {
 	pthread_mutex_lock(&global->finished_mutex);
 	global->finished = 1;
-	pthread_cond_broadcast(&global->scheduler_cond);
+	pthread_cond_broadcast(&global->finish_cond);
 	pthread_mutex_unlock(&global->finished_mutex);
 }
 

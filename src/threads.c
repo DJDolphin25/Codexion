@@ -63,6 +63,16 @@ static int	join_monitor(t_global *global)
 	return (1);
 }
 
+static int	cleanup_threads(t_global *global, int created)
+{
+	simulation_set_finished(global);
+	wake_all_requests(global);
+	join_coders(global, created);
+	if (!join_monitor(global))
+		return (0);
+	return (0);
+}
+
 int	thread_creation(t_global *global)
 {
 	int	created;
@@ -74,22 +84,9 @@ int	thread_creation(t_global *global)
 		return (0);
 	}
 	if (!create_coders(global, &created))
-	{
-		simulation_set_finished(global);
-		wake_all_requests(global);
-		join_coders(global, created);
-		if (!join_monitor(global))
-			return (0);
-		return (0);
-	}
+		return (cleanup_threads(global, created));
 	if (!join_coders(global, global->number_of_coders))
-	{
-		simulation_set_finished(global);
-		wake_all_requests(global);
-		if (!join_monitor(global))
-			return (0);
-		return (0);
-	}
+		return (cleanup_threads(global, created));
 	if (!join_monitor(global))
 		return (0);
 	return (1);
