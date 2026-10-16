@@ -4,7 +4,6 @@ codexion
 codexion.exe
 *.o
 tests.c
-RECODE_LIFO.md
 run_tests.sh
 check_log.py
 tests_out/
