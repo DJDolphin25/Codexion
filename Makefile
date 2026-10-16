@@ -4,7 +4,7 @@ NAME = codexion
 
 # Compiler and flags
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread -I includes -g
+CFLAGS = -Wall -Wextra -Werror -pthread -I includes
 
 	
 # Source files
