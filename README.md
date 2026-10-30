@@ -240,7 +240,7 @@ Each request works as a small **custom event**: it is created when a coder asks 
 
 ### Use of AI
 
-AI (Claude) was used as a **learning and review tool**. The code of the project was written by me.
+AI (Claude) was used as a **learning and review tool**.
 
-- **Understanding the subject (day 1):** answering and correcting a list of conceptual questions (the single-coder case, FIFO vs. EDF, the meaning of burnout, cooldown, monitor precision, why logging needs its own mutex, how to pass state without globals) before any code was written.
+- **Understanding the subject :** answering and correcting a list of conceptual questions (the single-coder case, FIFO vs. EDF, the meaning of burnout, cooldown, monitor precision, why logging needs its own mutex, how to pass state without globals) before any code was written.
 - **Final review and documentation:** a detailed walkthrough of the finished code (flow, design decisions, alternatives and their consequences), a static review that pointed out possible weaknesses, and help in drafting and structuring this README, which I then reviewed and adapted.
